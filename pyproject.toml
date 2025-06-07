@@ -1,0 +1,36 @@
+[project]
+name = "iotclima-backend"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "alex-candido", email = "alex.candido.tec@gmail.com"},
+]
+
+dependencies = [
+    "django>=5.2", 
+    "djangorestframework>=3.16.0", 
+    "django-extensions>=4.1", 
+    "markdown>=3.8", 
+    "django-filter>=25.1",
+    "dataclasses>=0.6", 
+    "python-dotenv>=1.0.1", 
+    "dependency-injector>=4.46.0",
+    "faker>=37.1.0",
+    "colorama>=0.4.6", 
+]
+
+requires-python = "==3.10.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.scripts]
+manage="python ./src/manage.py"
+server = "pdm run manage runserver 0.0.0.0:3333"

@@ -1,0 +1,3 @@
+pdm init
+pdm install
+pdm run django-admin startproject src
