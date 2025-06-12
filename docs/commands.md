@@ -3,3 +3,5 @@ pdm install
 pdm run django-admin startproject src
 pdm export -f requirements --without-hashes > requirements.txt
 pdm manage migrate
+
+docker-compose up -d --build

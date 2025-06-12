@@ -11,13 +11,6 @@ services:
       POSTGRES_USER: iotclima
       POSTGRES_PASSWORD: iotclima
     ports:
-      - 5438:5432
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8084:8080"
-
+      - 5439:5432
 volumes:
   pgdata:

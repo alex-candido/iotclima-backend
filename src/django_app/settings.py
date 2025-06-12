@@ -10,25 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+from datetime import timedelta
 from pathlib import Path
+
+from django_app.__shared.config import ConfigService
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+config = ConfigService()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0^niq+7nh3#9*clw*1%*s9_=b1-9$+hq@jh+b+ba(mg8m)cn+x'
+SECRET_KEY = config.JWT_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 
-# Application definition
+# --- Application definition ---
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,6 +43,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.gis',
+    'django_extensions',
+    'django_filters',
+    
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_gis',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -47,17 +70,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
+SITE_ID = 1
 ROOT_URLCONF = 'django_app.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -69,18 +96,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'django_app.wsgi.application'
 
 
-# Database
+# --- Database ---
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': config.DATABASE_CONFIG
 }
 
-
-# Password validation
+# --- Password validation ---
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -99,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
+# --- Internationalization ---
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -111,12 +134,91 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+## --- Static files ---
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- REST Framework settings ---
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+# --- CORS settings ---
+CORS_ALLOW_ALL_ORIGINS = config.CORS_ALLOW_ALL_ORIGINS
+CORS_ALLOWED_ORIGINS = config.CORS_ALLOWED_ORIGINS
+
+# --- REST Auth settings ---
+REST_AUTH = {
+    "USE_JWT": config.REST_AUTH_USE_JWT,
+    "PASSWORD_RESET_USE_SITES_DOMAIN": config.REST_AUTH_PASSWORD_RESET_USE_SITES_DOMAIN,
+    # "PASSWORD_RESET_SERIALIZER": config.REST_AUTH_PASSWORD_RESET_SERIALIZER,
+}
+
+# --- JWT settings (Simple JWT) ---
+SIMPLE_JWT = {
+    "ROTATE_REFRESH_TOKENS": config.SIMPLE_JWT_ROTATE_REFRESH_TOKENS,
+    "BLACKLIST_AFTER_ROTATION": config.SIMPLE_JWT_BLACKLIST_AFTER_ROTATION,
+    "UPDATE_LAST_LOGIN": config.SIMPLE_JWT_UPDATE_LAST_LOGIN,
+    "AUTH_HEADER_TYPES": config.SIMPLE_JWT_AUTH_HEADER_TYPES,
+    "AUTH_HEADER_NAME": config.SIMPLE_JWT_AUTH_HEADER_NAME,
+    "USER_ID_FIELD": config.SIMPLE_JWT_USER_ID_FIELD,
+    "USER_ID_CLAIM": config.SIMPLE_JWT_USER_ID_CLAIM,
+    "TOKEN_TYPE_CLAIM": config.SIMPLE_JWT_TOKEN_TYPE_CLAIM,
+    "JTI_CLAIM": config.SIMPLE_JWT_JTI_CLAIM,
+
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=config.JWT_ACCESS_TOKEN_LIFETIME_MINUTES),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=config.JWT_REFRESH_TOKEN_LIFETIME_DAYS),
+    "ALGORITHM": config.JWT_ALGORITHM,
+    "SIGNING_KEY": config.JWT_SECRET_KEY,
+}
+
+# --- Allauth Settings ---
+
+ACCOUNT_SIGNUP_FIELDS = config.ACCOUNT_SIGNUP_FIELDS
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = config.ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION
+ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED = config.ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED
+ACCOUNT_CONFIRM_EMAIL_ON_GET = config.ACCOUNT_CONFIRM_EMAIL_ON_GET
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = config.ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS
+ACCOUNT_EMAIL_VERIFICATION = config.ACCOUNT_EMAIL_VERIFICATION
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = config.ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS
+ACCOUNT_UNIQUE_EMAIL = config.ACCOUNT_UNIQUE_EMAIL
+ACCOUNT_EMAIL_SUBJECT_PREFIX = config.ACCOUNT_EMAIL_SUBJECT_PREFIX
+ACCOUNT_EMAIL_NOTIFICATIONS = config.ACCOUNT_EMAIL_NOTIFICATIONS
+
+# --- Redirection URLs ---
+
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = f"{config.FRONTEND_URL}{config.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL}"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = f"{config.FRONTEND_URL}{config.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL}"
+
+LOGIN_REDIRECT_URL = f"{config.FRONTEND_URL}{config.LOGIN_REDIRECT_URL}"
+LOGOUT_REDIRECT_URL = f"{config.FRONTEND_URL}{config.LOGOUT_REDIRECT_URL}"
+LOGIN_URL = f"{config.FRONTEND_URL}{config.LOGIN_URL}"
+ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
+ACCOUNT_SIGNUP_REDIRECT_URL = f"{config.FRONTEND_URL}{config.ACCOUNT_SIGNUP_REDIRECT_URL}"
+ACCOUNT_LOGIN_URL = LOGIN_URL
+RESET_PASSWORD_REDIRECT_URL = f"{config.FRONTEND_URL}{config.RESET_PASSWORD_REDIRECT_URL}"
+
+# --- Django SMTP (Email Settings) --
+EMAIL_BACKEND = config.EMAIL_BACKEND
+EMAIL_HOST = config.EMAIL_HOST
+EMAIL_PORT = config.EMAIL_PORT
+EMAIL_USE_TLS = config.EMAIL_USE_TLS
+EMAIL_HOST_USER = config.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = config.EMAIL_HOST_PASSWORD
+DEFAULT_FROM_EMAIL = config.DEFAULT_FROM_EMAIL
+
+# --- Frontend URL ---
+FRONTEND_URL = config.FRONTEND_URL
+
+# --- GDAL/GEOS paths
+GDAL_LIBRARY_PATH = "libgdal.so"
+GEOS_LIBRARY_PATH = "libgeos_c.so.1"
