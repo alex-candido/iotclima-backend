@@ -1,0 +1,2 @@
+class ModulesGenerator():
+  pass

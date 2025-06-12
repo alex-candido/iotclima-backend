@@ -1,0 +1,2 @@
+class AppGenerator():
+  pass

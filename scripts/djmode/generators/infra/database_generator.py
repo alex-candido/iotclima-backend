@@ -1,0 +1,2 @@
+class DatabaseGenerator():
+  pass
