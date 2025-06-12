@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:16-3.5
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: iotclima
+      POSTGRES_PASSWORD: iotclima
+    ports:
+      - 5438:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8084:8080"
+
+volumes:
+  pgdata:
