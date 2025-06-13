@@ -2,7 +2,12 @@
 
 from dependency_injector import containers, providers
 
-class Container(containers.DeclarativeContainer):
-    config = providers.Configuration()
+
+
+class CoreContainer(containers.DeclarativeContainer):
     
-container = Container()
+    config = providers.Configuration()
+
+core_container = CoreContainer()
+
+
