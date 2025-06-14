@@ -1,0 +1,37 @@
+# http/v1_users.http
+
+@baseUrl = http://localhost:3333/api/v1
+@users_id = 1
+
+### List all users
+GET {baseUrl}/users/
+
+### Create a new users
+POST {baseUrl}/users/
+Content-Type: application/json
+
+{
+  "name": "Sample users name"
+}
+
+### Retrieve a users by ID
+GET {baseUrl}/users/{{users_id}}/
+
+### Update a users by ID (PUT)
+PUT {baseUrl}/users/{{users_id}}/
+Content-Type: application/json
+
+{
+  "name": "Updated users name"
+}
+
+### Partially update a users by ID (PATCH)
+PATCH {baseUrl}/users/{{users_id}}/
+Content-Type: application/json
+
+{
+  "name": "Partial update of users name"
+}
+
+### Delete a users by ID
+DELETE {baseUrl}/users/{{users_id}}/
