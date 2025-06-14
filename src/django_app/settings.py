@@ -59,9 +59,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    
+
 
     'django_app.modules.v1.auth',
+    'django_app.modules.v1.users',
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,8 @@ WSGI_APPLICATION = 'django_app.wsgi.application'
 DATABASES = {
     'default': config.DATABASE_CONFIG
 }
+
+AUTH_USER_MODEL = 'users.User'
 
 # --- Password validation ---
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
