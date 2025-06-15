@@ -23,6 +23,8 @@ class PlaceAdmin(GISModelAdmin):
         'uuid', 'created_at', 'updated_at',
         'get_latitude_display', 'get_longitude_display'
     )
+    
+    list_per_page = 25
 
     @admin.display(description='Latitude')
     def get_latitude(self, obj):

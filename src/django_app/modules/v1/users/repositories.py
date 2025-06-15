@@ -21,4 +21,5 @@ class UsersRepository:
         return instance
 
     def delete(self, instance):
-        instance.delete()
+        instance.is_active = False
+        instance.save()

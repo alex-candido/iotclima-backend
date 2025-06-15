@@ -1,18 +1,18 @@
-# django_app/modules/v1/places/repositories.py
+# django_app/modules/v1/Stations/repositories.py
 
-from .models import Place, Status
+from .models import Station, StationStatus
 
 
-class PlacesRepository:
+class StationsRepository:
 
     def list(self):
-        return Place.objects.all()
+        return Station.objects.all()
 
     def create(self, validated_data):
-        return Place.objects.create(**validated_data)
+        return Station.objects.create(**validated_data)
 
     def get(self, pk):
-        return Place.objects.get(pk=pk)
+        return Station.objects.get(pk=pk)
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
@@ -21,5 +21,5 @@ class PlacesRepository:
         return instance
 
     def delete(self, instance):
-        instance.status = Status.INACTIVE
+        instance.status = StationStatus.INACTIVE 
         instance.save()
