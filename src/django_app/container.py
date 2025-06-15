@@ -1,14 +1,16 @@
 # django_app/container.py
 
-from .modules.v1.users.container import UsersContainer
-from .modules.v1.places.container import PlacesContainer
-from .modules.v1.stations.container import StationsContainer
-from .modules.v1.sensors.container import SensorsContainer
 from dependency_injector import containers, providers
 
+from .modules.v1.places.container import PlacesContainer
+from .modules.v1.sensors.container import SensorsContainer
+from .modules.v1.station_sensors.container import StationSensorsContainer
+from .modules.v1.stations.container import StationsContainer
+from .modules.v1.users.container import UsersContainer
 
 
 class CoreContainer(containers.DeclarativeContainer):
+    station_sensors_container = providers.Container(StationSensorsContainer)
     sensors_container = providers.Container(SensorsContainer)
     stations_container = providers.Container(StationsContainer)
     places_container = providers.Container(PlacesContainer)

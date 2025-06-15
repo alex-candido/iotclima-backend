@@ -1,0 +1,37 @@
+# http/v1_station_sensors.http
+
+@baseUrl = http://localhost:3333/api/v1
+@station_sensors_id = 1
+
+### List all station_sensors
+GET {baseUrl}/station_sensors/
+
+### Create a new station_sensors
+POST {baseUrl}/station_sensors/
+Content-Type: application/json
+
+{
+  "name": "Sample station_sensors name"
+}
+
+### Retrieve a station_sensors by ID
+GET {baseUrl}/station_sensors/{{station_sensors_id}}/
+
+### Update a station_sensors by ID (PUT)
+PUT {baseUrl}/station_sensors/{{station_sensors_id}}/
+Content-Type: application/json
+
+{
+  "name": "Updated station_sensors name"
+}
+
+### Partially update a station_sensors by ID (PATCH)
+PATCH {baseUrl}/station_sensors/{{station_sensors_id}}/
+Content-Type: application/json
+
+{
+  "name": "Partial update of station_sensors name"
+}
+
+### Delete a station_sensors by ID
+DELETE {baseUrl}/station_sensors/{{station_sensors_id}}/

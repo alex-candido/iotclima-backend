@@ -1,18 +1,18 @@
-# django_app/modules/v1/sensors/repositories.py
+# django_app/modules/v1/station_sensors/repositories.py
 
-from .models import Sensor, SensorStatus
+from .models import StationSensor
 
 
-class SensorsRepository:
+class StationSensorRepository:
 
     def list(self):
-        return Sensor.objects.all()
+        return StationSensor.objects.all()
 
     def create(self, validated_data):
-        return Sensor.objects.create(**validated_data)
+        return StationSensor.objects.create(**validated_data)
 
     def get(self, pk):
-        return Sensor.objects.get(pk=pk)
+        return StationSensor.objects.get(pk=pk)
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
@@ -21,5 +21,5 @@ class SensorsRepository:
         return instance
 
     def delete(self, instance):
-        instance.status = SensorStatus.INACTIVE
+        instance.is_active = False
         instance.save()
