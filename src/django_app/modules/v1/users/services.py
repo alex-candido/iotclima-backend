@@ -1,6 +1,8 @@
 # django_app/modules/v1/users/services.py
 
 
+from rest_framework.exceptions import ValidationError
+
 from .filters import UsersFilter
 from .repositories import UsersRepository
 
@@ -16,7 +18,7 @@ class UsersService:
             if filterset.is_valid():
                 queryset = filterset.qs
             else:
-                print(f"Invalid filter params: {filterset.errors}")
+                raise ValidationError(filterset.errors)
 
         return queryset
 

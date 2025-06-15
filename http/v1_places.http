@@ -1,0 +1,118 @@
+@baseUrl = http://localhost:3333/api/v1
+@places_id = 1
+
+### List all places (without filters or pagination)
+GET {{baseUrl}}/places/
+
+### List all places (with pagination)
+# Get the second page, with 5 items per page
+GET {{baseUrl}}/places/?page=2&page_size=5
+
+### List all places (with standard text filters)
+# Filter by name containing 'Estação' and city containing 'Fortaleza'
+GET {{baseUrl}}/places/?name__icontains=Estação&city__icontains=Fortaleza
+
+# Filter by specific status (1 for ACTIVE) and type (3 for CITY)
+GET {{baseUrl}}/places/?status=1&type=3
+
+# Filter by creation date range (e.g., created between Jan 1st, 2025 and Feb 1st, 2025)
+GET {{baseUrl}}/places/?created_at_after=2025-01-01T00:00:00Z&created_at_before=2025-02-01T23:59:59Z
+
+### List all places (with geospatial filters)
+
+# 1. g_near: Places near a point within a radius
+#    Usage: ?g_near=latitude,longitude,radius_in_km
+#    Example: Places within 10 km of Fortaleza city center (-3.7319, -38.5267)
+GET {{baseUrl}}/places/?g_near=-3.7319,-38.5267,10
+
+# 2. g_within_box: Places within a bounding box (min_lon,min_lat,max_lon,max_lat)
+#    Example: Places within a box covering part of Ceará
+GET {{baseUrl}}/places/?g_within_box=-39.0,-6.0,-37.0,-2.0
+
+# 3. g_within_polygon: Places within a given WKT polygon
+#    Usage: ?g_within_polygon=POLYGON((lon1 lat1, lon2 lat2, ..., lonN latN, lon1 lat1))
+#    Example: Places within a small square polygon
+GET {{baseUrl}}/places/?g_within_polygon=POLYGON((-38.53 -3.74, -38.51 -3.74, -38.51 -3.72, -38.53 -3.72, -38.53 -3.74))
+
+# 4. g_intersects: Places intersecting a given WKT geometry (Point, LineString, Polygon)
+#    Usage: ?g_intersects=WKT_GEOMETRY
+#    Example: Places that intersect with a specific point
+GET {{baseUrl}}/places/?g_intersects=POINT(-38.5267 -3.7319)
+
+# 5. g_wkt: Generic filter for WKT (similar to g_intersects, but for any WKT geometry)
+#    Usage: ?g_wkt=WKT_GEOMETRY
+#    Example: Places intersecting a specific line segment
+GET {{baseUrl}}/places/?g_wkt=LINESTRING(-38.50 -3.70, -38.55 -3.75)
+
+# 6. g_distance: Places within an explicit distance range from a point (lat,lon,min_km,max_km)
+#    Example: Places between 50 km and 100 km from Fortaleza city center
+GET {{baseUrl}}/places/?g_distance=-3.7319,-38.5267,50,100
+
+# 7. g_buffer: Places intersecting a buffer around a WKT geometry (WKT_GEOMETRY,radius_meters)
+#    Example: Places intersecting a 500-meter buffer around a specific point
+GET {{baseUrl}}/places/?g_buffer=POINT(-38.5267 -3.7319),500
+
+# 8. g_contains: Places whose geometry is contained by a given WKT polygon
+#    Usage: ?g_contains=WKT_POLYGON
+#    Example: Places entirely within a larger bounding box
+GET {{baseUrl}}/places/?g_contains=POLYGON((-39.5 -7.0, -37.5 -7.0, -37.5 -2.0, -39.5 -2.0, -39.5 -7.0))
+
+# 9. g_along_line: Places within a certain distance from a given LineString (LINESTRING,tolerance_meters)
+#    Example: Places within 100 meters of a specific road segment
+GET {{baseUrl}}/places/?g_along_line=LINESTRING(-38.53 -3.73, -38.52 -3.72),100
+
+### List all places (combining filters and pagination)
+# Filter by city and get the first page with 2 items
+GET {{baseUrl}}/places/?city=Fortaleza&page=1&page_size=2
+
+### Create a new places
+POST {{baseUrl}}/places/
+Content-Type: application/json
+
+{
+  "name": "New Station Test",
+  "description": "A test station created via API.",
+  "address": "API Street, 456",
+  "city": "Fortaleza",
+  "state": "Ceará",
+  "country": "Brazil",
+  "latitude": -3.75,
+  "longitude": -38.60,
+  "status": 1,
+  "type": 3,
+  "user": 1
+}
+
+### Retrieve a places by ID
+GET {{baseUrl}}/places/{{places_id}}/
+
+### Update a places by ID (PUT)
+PUT {{baseUrl}}/places/{{places_id}}/
+Content-Type: application/json
+
+{
+  "name": "Updated Station Name via PUT",
+  "description": "Updated description.",
+  "address": "New API Address, 789",
+  "city": "Caucaia",
+  "state": "Ceará",
+  "country": "Brazil",
+  "latitude": -3.70,
+  "longitude": -38.80,
+  "status": 0,
+  "type": 1,
+  "user": 1
+}
+
+### Partially update a places by ID (PATCH)
+PATCH {{baseUrl}}/places/{{places_id}}/
+Content-Type: application/json
+
+{
+  "name": "Partial update of Station Name",
+  "latitude": -3.74,
+  "longitude": -38.55
+}
+
+### Delete a places by ID
+DELETE {{baseUrl}}/places/{{places_id}}/

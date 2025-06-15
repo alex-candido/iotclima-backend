@@ -2,11 +2,17 @@
 
 import django_filters
 
+from .models import User
 
-class UsersFilter(django_filters.FilterSet):
-    username = django_filters.CharFilter(lookup_expr='icontains')
-    email = django_filters.CharFilter(lookup_expr='icontains') 
-    first_name = django_filters.CharFilter(lookup_expr='icontains')
-    last_name = django_filters.CharFilter(lookup_expr='icontains')
-    date_joined = django_filters.DateFromToRangeFilter()
-    last_login = django_filters.DateTimeFromToRangeFilter()
+
+class UsersFilter(django_filters.FilterSet):    
+    class Meta:
+        model = User
+        fields = {
+            'username': ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith'],
+            'email': ['exact', 'iexact', 'contains', 'icontains'],
+            'first_name': ['exact', 'icontains'],
+            'last_name': ['exact', 'icontains'],
+            'date_joined': ['exact', 'gt', 'gte', 'lt', 'lte', 'range'],
+            'last_login': ['exact', 'gt', 'gte', 'lt', 'lte', 'range', 'isnull'],
+        }
