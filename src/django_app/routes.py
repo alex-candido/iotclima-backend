@@ -3,6 +3,7 @@
 from django.urls import include, path
 
 urlpatterns = [
+    path('sensors/', include('django_app.modules.v1.sensors.urls')),
     path('stations/', include('django_app.modules.v1.stations.urls')),
     path('places/', include('django_app.modules.v1.places.urls')),
     path('users/', include('django_app.modules.v1.users.urls')),
