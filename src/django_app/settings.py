@@ -63,6 +63,8 @@ INSTALLED_APPS = [
 
     'django_app.modules.v1.auth',
     'django_app.modules.v1.users',
+
+    'django_app.modules.v1.places',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +154,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- REST Framework settings ---
 REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
@@ -226,6 +231,8 @@ DEFAULT_FROM_EMAIL = config.DEFAULT_FROM_EMAIL
 
 # --- Frontend URL ---
 FRONTEND_URL = config.FRONTEND_URL
+
+# --- GISModelAdmin
 
 # --- GDAL/GEOS paths
 GDAL_LIBRARY_PATH = "libgdal.so"
