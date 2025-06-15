@@ -53,7 +53,6 @@ class Command(BaseCommand):
             raise CommandError(f"Error reading CSV file from {csv_path}: {e}")
 
         total_places_created = 0
-
         with transaction.atomic():
             grouped_by_city = df.groupby('city')
 

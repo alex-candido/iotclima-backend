@@ -26,7 +26,8 @@ GET {{baseUrl}}/places/?created_at_after=2025-01-01T00:00:00Z&created_at_before=
 GET {{baseUrl}}/places/?g_near=-3.7319,-38.5267,10
 
 # 2. g_within_box: Places within a bounding box (min_lon,min_lat,max_lon,max_lat)
-#    Example: Places within a box covering part of Ceará
+#   Example: Places within a box covering part of Ceará
+###
 GET {{baseUrl}}/places/?g_within_box=-39.0,-6.0,-37.0,-2.0
 
 # 3. g_within_polygon: Places within a given WKT polygon
