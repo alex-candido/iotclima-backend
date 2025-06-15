@@ -1,20 +1,20 @@
-# django_app/modules/v1/sensors/services.py
+# django_app/modules/v1/station_sensors/services.py
 
 from rest_framework.exceptions import ValidationError
 
-from .filters import SensorFilter
-from .repositories import SensorsRepository
+from .filters import StationSensorFilter
+from .repositories import StationSensorRepository
 
 
-class SensorsService:
-    def __init__(self, repository: SensorsRepository):
+class StationSensorService:
+    def __init__(self, repository: StationSensorRepository):
         self.repository = repository
 
     def list(self, query_params=None):
         queryset = self.repository.list()
         
         if query_params:
-            filterset = SensorFilter(query_params, queryset=queryset)
+            filterset = StationSensorFilter(query_params, queryset=queryset)
             if not filterset.is_valid():
                 raise ValidationError(filterset.errors) 
             
@@ -22,8 +22,8 @@ class SensorsService:
         return queryset
 
     def create(self, input_data):
-        sensor = self.repository.create(input_data)
-        return sensor
+        station_sensor = self.repository.create(input_data)
+        return station_sensor
 
     def retrieve(self, pk):
         return self.repository.get(pk)
@@ -39,4 +39,3 @@ class SensorsService:
 
     def get_instance(self, pk):
         return self.repository.get(pk)
-
