@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'django_app.modules.v1.users',
     'django_app.modules.v1.places',
     'django_app.modules.v1.stations',
+
+    'django_app.modules.v1.sensors',
 ]
 
 MIDDLEWARE = [
