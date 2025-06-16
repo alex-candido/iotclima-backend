@@ -97,6 +97,7 @@ class ConfigService(BaseSettings):
     REST_AUTH_USE_JWT: bool = True
     REST_AUTH_PASSWORD_RESET_USE_SITES_DOMAIN: bool = False
     REST_AUTH_PASSWORD_RESET_SERIALIZER: str = 'django_app.modules.v1.auth.serializers.CustomPasswordResetSerializer'
+    REST_AUTH_USER_DETAILS_SERIALIZER: str = 'django_app.modules.v1.users.serializers.CustomUserDetailsSerializer'
     
     # django-rest-framework-simplejwt Settings [https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html]
     SIMPLE_JWT_ROTATE_REFRESH_TOKENS: bool = True 
@@ -108,6 +109,25 @@ class ConfigService(BaseSettings):
     SIMPLE_JWT_USER_ID_CLAIM: str = "user_id" 
     SIMPLE_JWT_TOKEN_TYPE_CLAIM: str = "token_type" 
     SIMPLE_JWT_JTI_CLAIM: str = "jti" 
+    
+    VERIFYING_KEY: str = ""
+    AUDIENCE: str | None = None
+    ISSUER: str | None = None
+    JSON_ENCODER: str | None = None
+    JWK_URL: str | None = None
+    LEEWAY: int = 0
+
+    USER_AUTHENTICATION_RULE: str = "rest_framework_simplejwt.authentication.default_user_authentication_rule"
+    
+    AUTH_TOKEN_CLASSES: Tuple[str, ...] = (
+        "rest_framework_simplejwt.tokens.AccessToken",
+        "rest_framework_simplejwt.tokens.RefreshToken",
+    ) 
+    TOKEN_USER_CLASS: str = "rest_framework_simplejwt.models.TokenUser"
+    
+    SLIDING_TOKEN_REFRESH_EXP_CLAIM: str = "refresh_exp"
+    SLIDING_TOKEN_LIFETIME_MINUTES: int = 5 
+    SLIDING_TOKEN_REFRESH_LIFETIME_DAYS: int = 1 
     
     # Authentication Backends  
     AUTHENTICATION_BACKENDS_LIST: Tuple[str, ...] = (

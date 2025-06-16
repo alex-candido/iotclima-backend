@@ -1,4 +1,9 @@
-from django.contrib.auth.models import Group
+# django_app/modules/v1/users/serializers.py
+
+from dj_rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
+from dj_rest_auth.serializers import \
+    UserDetailsSerializer as DefaultUserDetailsSerializer
+from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 
 from .models import User
@@ -26,6 +31,17 @@ class UsersOutputSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+    def get_group_names(self, obj):
+        return [group.name for group in obj.groups.all()]
+
+
+class CustomUserDetailsSerializer(DefaultUserDetailsSerializer):
+    group_names = serializers.SerializerMethodField()
+
+    class Meta(DefaultUserDetailsSerializer.Meta):
+        fields = DefaultUserDetailsSerializer.Meta.fields + ('group_names',) 
+
 
     def get_group_names(self, obj):
         return [group.name for group in obj.groups.all()]

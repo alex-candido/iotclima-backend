@@ -9,7 +9,7 @@ colorama==0.4.6
 dependency-injector==4.47.1
 dj-database-url==3.0.0
 dj-rest-auth==7.0.1
-django==5.2.2
+django==5.2.3
 django-allauth==65.9.0
 django-cors-headers==4.7.0
 django-extensions==4.1
@@ -17,9 +17,13 @@ django-filter==25.1
 djangorestframework==3.16.0
 djangorestframework-gis==1.2.0
 djangorestframework-simplejwt==5.5.0
-faker==37.3.0
+faker==37.4.0
+geographiclib==2.0
+geopy==2.4.1
 idna==3.10
 markdown==3.8
+numpy==2.2.6; python_version < "3.11"
+pandas==2.3.0
 psycopg2-binary==2.9.10
 pydantic==2.11.5
 pydantic-core==2.33.2
@@ -27,8 +31,11 @@ pydantic-settings==2.9.1
 pydot==4.0.0
 pyjwt==2.9.0
 pyparsing==3.2.3
+python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
+pytz==2025.2
 requests==2.32.4
+six==1.17.0
 sqlparse==0.5.3
 typing-extensions==4.14.0
 typing-inspection==0.4.1
