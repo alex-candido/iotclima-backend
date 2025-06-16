@@ -1,6 +1,7 @@
 # django_app/container.py
 
 from .modules.v1.records.container import RecordsContainer
+from .modules.v1.events.container import EventsContainer
 from dependency_injector import containers, providers
 
 from .modules.v1.places.container import PlacesContainer
@@ -11,6 +12,7 @@ from .modules.v1.users.container import UsersContainer
 
 
 class CoreContainer(containers.DeclarativeContainer):
+    events_container = providers.Container(EventsContainer)
     records_container = providers.Container(RecordsContainer)
     station_sensors_container = providers.Container(StationSensorsContainer)
     sensors_container = providers.Container(SensorsContainer)
