@@ -23,6 +23,7 @@ class StationSensorAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
     raw_id_fields = ('station', 'sensor') 
+    list_per_page = 25
 
     @admin.display(description='Station Name')
     def get_station_name(self, obj):
