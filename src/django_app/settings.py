@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'django_app.modules.v1.sensors',
     'django_app.modules.v1.station_sensors',
     'django_app.modules.v1.records',
+
+    'django_app.modules.v1.events',
 ]
 
 MIDDLEWARE = [
