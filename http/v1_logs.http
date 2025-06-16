@@ -1,0 +1,37 @@
+# http/v1_logs.http
+
+@baseUrl = http://localhost:3333/api/v1
+@logs_id = 1
+
+### List all logs
+GET {baseUrl}/logs/
+
+### Create a new logs
+POST {baseUrl}/logs/
+Content-Type: application/json
+
+{
+  "name": "Sample logs name"
+}
+
+### Retrieve a logs by ID
+GET {baseUrl}/logs/{{logs_id}}/
+
+### Update a logs by ID (PUT)
+PUT {baseUrl}/logs/{{logs_id}}/
+Content-Type: application/json
+
+{
+  "name": "Updated logs name"
+}
+
+### Partially update a logs by ID (PATCH)
+PATCH {baseUrl}/logs/{{logs_id}}/
+Content-Type: application/json
+
+{
+  "name": "Partial update of logs name"
+}
+
+### Delete a logs by ID
+DELETE {baseUrl}/logs/{{logs_id}}/
