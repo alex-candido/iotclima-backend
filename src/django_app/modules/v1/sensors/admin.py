@@ -35,6 +35,7 @@ class SensorAdmin(admin.ModelAdmin):
     ordering = ('type', 'model',)
 
     raw_id_fields = ('user',)
+    list_per_page = 25
 
     @admin.display(description='Sensor Type')
     def get_type_display_value(self, obj):

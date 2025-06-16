@@ -1,0 +1,37 @@
+# http/v1_records.http
+
+@baseUrl = http://localhost:3333/api/v1
+@records_id = 1
+
+### List all records
+GET {baseUrl}/records/
+
+### Create a new records
+POST {baseUrl}/records/
+Content-Type: application/json
+
+{
+  "name": "Sample records name"
+}
+
+### Retrieve a records by ID
+GET {baseUrl}/records/{{records_id}}/
+
+### Update a records by ID (PUT)
+PUT {baseUrl}/records/{{records_id}}/
+Content-Type: application/json
+
+{
+  "name": "Updated records name"
+}
+
+### Partially update a records by ID (PATCH)
+PATCH {baseUrl}/records/{{records_id}}/
+Content-Type: application/json
+
+{
+  "name": "Partial update of records name"
+}
+
+### Delete a records by ID
+DELETE {baseUrl}/records/{{records_id}}/

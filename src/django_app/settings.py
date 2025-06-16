@@ -60,16 +60,13 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-
     'django_app.modules.v1.auth',
     'django_app.modules.v1.users',
     'django_app.modules.v1.places',
     'django_app.modules.v1.stations',
-
     'django_app.modules.v1.sensors',
-
-
     'django_app.modules.v1.station_sensors',
+    'django_app.modules.v1.records',
 ]
 
 MIDDLEWARE = [
