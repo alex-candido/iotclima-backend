@@ -1,5 +1,6 @@
 from rest_framework.exceptions import ValidationError
 
+from rest_framework.request import QueryDict
 from .filters import LogFilter
 from .repositories import LogsRepository
 
@@ -8,16 +9,17 @@ class LogsService:
     def __init__(self, repository: LogsRepository):
         self.repository = repository
 
-    def list(self, query_params=None):
-        queryset = self.repository.list()
+    def list(self, query_params: QueryDict):
+        queryset = self.repository.list() 
+        total_count = queryset.count()
+    
+        filterset = LogFilter(data=query_params, queryset=queryset)
         
-        if query_params:
-            filterset = LogFilter(query_params, queryset=queryset)
-            if not filterset.is_valid():
-                raise ValidationError(filterset.errors) 
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors) 
             
-            queryset = filterset.qs
-        return queryset
+        filtered_queryset = filterset.qs.order_by('id') 
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         log = self.repository.create(input_data)

@@ -17,7 +17,16 @@ class StandardResultsPagination(PageNumberPagination):
     page_size = 10 
     page_size_query_param = 'page_size' 
     max_page_size = 100
-
+    
+    def get_paginated_response(self, data, total_count=None):
+        response_data = {
+            'total_count': total_count if total_count is not None else 0,
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        }
+        return Response(response_data)
 
 class UsersViewSet(viewsets.ViewSet):
     service: UsersService = core_container.users_container.service()
@@ -36,11 +45,16 @@ class UsersViewSet(viewsets.ViewSet):
 
     # GET /users/
     def list(self, request):
-        filtered_queryset = self.service.list(query_params=request.query_params)
+        filtered_queryset, total_count = self.service.list(query_params=request.query_params)
+        
+        if request.query_params.get('count_only') == 'true':
+            count = filtered_queryset.count()
+            return Response({'count': count}, status=status.HTTP_200_OK)
+        
         page = self.pagination_class.paginate_queryset(filtered_queryset, request, view=self)
         serializer = UsersOutputSerializer(page, many=True)
-        return self.pagination_class.get_paginated_response(serializer.data)
-
+        return self.pagination_class.get_paginated_response(serializer.data, total_count=total_count)
+ 
     # POST /users/
     def create(self, request):
         input_data = self._validated_data(UsersInputSerializer, data=request.data)

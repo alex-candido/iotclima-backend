@@ -1,7 +1,7 @@
 # django_app/modules/v1/stations/filters.py
 
 import django_filters
-
+from django.db.models import Q
 from .models import Station, StationStatus
 
 
@@ -14,9 +14,20 @@ class StationFilter(django_filters.FilterSet):
 
     status = django_filters.ChoiceFilter(choices=StationStatus.choices)
 
-    place_id = django_filters.NumberFilter(field_name='place__id', lookup_expr='exact', label="Place ID")
-    user_id = django_filters.NumberFilter(field_name='user__id', lookup_expr='exact', label="User ID")
+    place_id = django_filters.NumberFilter(field_name='place__id', label="Place ID")
+    user_id = django_filters.NumberFilter(field_name='user__id', label="User ID")
 
+    search_term = django_filters.CharFilter(method='filter_by_search_term')
+
+    def filter_by_search_term(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                Q(name__icontains=value) |
+                Q(description__icontains=value) |
+                Q(model__icontains=value) | 
+                Q(firmware__icontains=value) 
+            )
+        return queryset
 
     class Meta:
         model = Station
@@ -34,4 +45,8 @@ class StationFilter(django_filters.FilterSet):
             'next_maintenance_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
             'created_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
             'updated_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
+            
+            'status': ['exact', 'in'], 
+            'place_id': ['exact'], 
+            'user_id': ['exact'],
         }

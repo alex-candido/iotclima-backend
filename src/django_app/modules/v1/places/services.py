@@ -3,6 +3,7 @@
 from django.contrib.gis.db.models import GeometryField
 from django.contrib.gis.db.models.functions import Centroid, Distance
 from django.contrib.gis.geos import Point
+from rest_framework.request import QueryDict
 from django.db.models import Aggregate
 from rest_framework.exceptions import ValidationError
 
@@ -22,18 +23,18 @@ class PlacesService:
         self.repository = repository
         self.users_repository = users_repository
 
-    # --- CRUD Methods ---
-    def list(self, query_params=None):
+    def list(self, query_params: QueryDict): 
         queryset = self.repository.list()
-        
-        if query_params:
-            filterset = PlaceFilter(query_params, queryset=queryset)
-            if filterset.is_valid():
-                queryset = filterset.qs
-            else:
-                raise ValidationError(filterset.errors)
+        filterset = PlaceFilter(data=query_params, queryset=queryset)
 
-        return queryset
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors)
+
+        filtered_queryset = filterset.qs.order_by('id') 
+
+        total_count = filtered_queryset.count() 
+
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         latitude = input_data.pop('latitude', None)

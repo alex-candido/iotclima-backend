@@ -4,22 +4,24 @@ from rest_framework.exceptions import ValidationError
 
 from .filters import StationFilter
 from .repositories import StationsRepository
+from rest_framework.request import QueryDict
 
 
 class StationsService:
     def __init__(self, repository: StationsRepository):
         self.repository = repository
 
-    def list(self, query_params=None):
-        queryset = self.repository.list()
-        
-        if query_params:
-            filterset = StationFilter(query_params, queryset=queryset)
-            if not filterset.is_valid():
-                raise ValidationError(filterset.errors) 
-            
-            queryset = filterset.qs
-        return queryset
+    def list(self, query_params: QueryDict):
+        queryset = self.repository.list() 
+
+        filterset = StationFilter(data=query_params, queryset=queryset)
+
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors)
+
+        filtered_queryset = filterset.qs.order_by('id')
+        total_count = filtered_queryset.count() 
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         station = self.repository.create(input_data)

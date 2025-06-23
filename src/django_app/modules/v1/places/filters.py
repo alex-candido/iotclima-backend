@@ -2,7 +2,7 @@
 
 import django_filters
 from django.contrib.gis.geos import GEOSGeometry, LineString, Point, Polygon
-
+from django.db.models import Q
 from .models import Place, PlaceType, Status
 
 
@@ -13,6 +13,28 @@ class PlaceFilter(django_filters.FilterSet):
 
     status = django_filters.ChoiceFilter(choices=Status.choices)
     type = django_filters.ChoiceFilter(choices=PlaceType.choices)
+    
+    search_term = django_filters.CharFilter(method='filter_by_search_term')
+    is_active = django_filters.BooleanFilter(field_name='is_active')
+
+    def filter_by_search_term(self, queryset, name, value):
+        print(f"DEBUG: filter_by_search_term called. Name: {name}, Value: '{value}'")
+        print(f"DEBUG: Queryset before filter: {queryset.count()} items.")
+
+        if value:
+            filtered_queryset = queryset.filter(
+                Q(name__icontains=value) |
+                # Q(description__icontains=value) |
+                # Q(address__icontains=value) |
+                Q(city__icontains=value) |
+                Q(state__icontains=value) |
+                Q(country__icontains=value)
+            )
+            print(f"DEBUG: Queryset AFTER filter: {filtered_queryset.count()} items.")
+            return filtered_queryset
+        
+        print(f"DEBUG: Value is empty, returning original queryset.")
+        return queryset
 
     # 1. g_near: Filter places near a point within a given radius.
     #    Usage: ?g_near=lat,lon,radius_km

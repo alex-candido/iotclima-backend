@@ -19,6 +19,7 @@ class UsersInputSerializer(serializers.Serializer):
 
 class UsersOutputSerializer(serializers.ModelSerializer):
     group_names = serializers.SerializerMethodField()
+    user_permission_names = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -26,7 +27,7 @@ class UsersOutputSerializer(serializers.ModelSerializer):
             'id', 'uuid', 'username', 'first_name', 'last_name', 'email',
             'is_superuser', 'is_staff', 'is_active',
             'date_joined', 'last_login', 'created_at', 'updated_at',
-            'group_names',
+            'group_names', 'user_permission_names'
         )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -34,7 +35,9 @@ class UsersOutputSerializer(serializers.ModelSerializer):
 
     def get_group_names(self, obj):
         return [group.name for group in obj.groups.all()]
-
+    
+    def get_user_permission_names(self, obj):
+        return [f"{p.content_type.app_label}.{p.codename}" for p in obj.user_permissions.all()]
 
 class CustomUserDetailsSerializer(DefaultUserDetailsSerializer):
     group_names = serializers.SerializerMethodField()

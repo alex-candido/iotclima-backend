@@ -19,8 +19,6 @@ class LogFilter(django_filters.FilterSet):
 
     class Meta:
         model = Log
-        # REMOVIDO: filter_overrides para models.JSONField (não é mais necessário)
-        # REMOVIDO: Filtros para 'metadata' do dicionário 'fields'
         fields = {
             'message': ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith'],
             

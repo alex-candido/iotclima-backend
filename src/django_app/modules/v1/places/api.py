@@ -12,17 +12,25 @@ from django_app.container import core_container
 from .serializers import PlacesInputSerializer, PlacesOutputSerializer
 from .services import PlacesService
 
-
-# Define a custom Pagination class
 class StandardResultsPagination(PageNumberPagination):
-    page_size = 10 
-    page_size_query_param = 'page_size' 
-    max_page_size = 100 
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, data, total_count=None):
+        response_data = {
+            'total_count': total_count if total_count is not None else 0, 
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        }
+        return Response(response_data)
 
 
 class PlacesViewSet(viewsets.ViewSet):
     service: PlacesService = core_container.places_container.service()
-    pagination_class = StandardResultsPagination() 
+    pagination_class = StandardResultsPagination()
 
     @staticmethod
     def _validated_data(serializer_class: Type[Serializer], data: Union[dict, List[dict], Any], **kwargs) -> Any:
@@ -37,10 +45,16 @@ class PlacesViewSet(viewsets.ViewSet):
 
     # GET /places/
     def list(self, request):
-        filtered_queryset = self.service.list(query_params=request.query_params)
+        filtered_queryset, total_count = self.service.list(query_params=request.query_params)
+
+        if request.query_params.get('count_only') == 'true':
+            count = filtered_queryset.count()
+            return Response({'count': count}, status=status.HTTP_200_OK)
+
         page = self.pagination_class.paginate_queryset(filtered_queryset, request, view=self)
         serializer = PlacesOutputSerializer(page, many=True)
-        return self.pagination_class.get_paginated_response(serializer.data)
+        return self.pagination_class.get_paginated_response(serializer.data, total_count=total_count)
+
 
     # POST /places/
     def create(self, request):
