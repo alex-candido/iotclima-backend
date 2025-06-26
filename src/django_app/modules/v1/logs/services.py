@@ -11,14 +11,13 @@ class LogsService:
 
     def list(self, query_params: QueryDict):
         queryset = self.repository.list() 
-        total_count = queryset.count()
-    
         filterset = LogFilter(data=query_params, queryset=queryset)
         
         if not filterset.is_valid():
             raise ValidationError(filterset.errors) 
             
         filtered_queryset = filterset.qs.order_by('id') 
+        total_count = queryset.count()
         return filtered_queryset, total_count
 
     def create(self, input_data):

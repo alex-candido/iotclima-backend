@@ -1,7 +1,7 @@
 import django_filters
+from django.db.models import Q
 
-from django_app.modules.v1.sensors.models import (SensorStatus, SensorType,
-                                                  UnitType)
+from django_app.modules.v1.sensors.models import (SensorStatus, SensorType, UnitType)
 
 from .models import Event, EventCategory, EventSeverity, EventStatus, EventType
 
@@ -20,13 +20,31 @@ class EventFilter(django_filters.FilterSet):
     user_id = django_filters.NumberFilter(field_name='user__id', label="User ID")
     station_sensor_id = django_filters.NumberFilter(field_name='station_sensor__id', label="StationSensor ID")
 
+    search_term = django_filters.CharFilter(method='filter_by_search_term')
+
+    def filter_by_search_term(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                Q(title__icontains=value) |
+                Q(description__icontains=value) |
+                Q(station_sensor__position__icontains=value) |
+                Q(station_sensor__station__name__icontains=value) |
+                Q(station_sensor__station__description__icontains=value) |
+                Q(station_sensor__station__model__icontains=value) |
+                Q(station_sensor__sensor__model__icontains=value) |
+                Q(station_sensor__sensor__name__icontains=value) |
+                Q(station_sensor__sensor__description__icontains=value)
+            )
+        return queryset
+
+    is_active = django_filters.BooleanFilter(label="Is Active Event")
 
     class Meta:
         model = Event
         fields = {
             'title': ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith'],
             'description': ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith'],
-            
+
             'occurred_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
             'resolved_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
             'created_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
@@ -39,14 +57,4 @@ class EventFilter(django_filters.FilterSet):
 
             'user_id': ['exact'],
             'station_sensor_id': ['exact'],
-            
-            'station_sensor__position': ['exact', 'iexact', 'contains', 'icontains'],
-            'station_sensor__is_active': ['exact'],
-            'station_sensor__installed_date': ['exact', 'gt', 'gte', 'lt', 'lte'],
-            'station_sensor__calibrated_at': ['exact', 'gt', 'gte', 'lt', 'lte'],
-
-            'station_sensor__sensor__model': ['exact', 'iexact', 'contains', 'icontains'],
-            'station_sensor__sensor__type': ['exact', 'in'],
-            'station_sensor__sensor__status': ['exact', 'in'],
-            'station_sensor__sensor__unit': ['exact', 'in'],
         }

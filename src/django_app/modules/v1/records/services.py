@@ -1,7 +1,7 @@
 # django_app/modules/v1/records/services.py
 
 from rest_framework.exceptions import ValidationError
-
+from rest_framework.request import QueryDict
 from .filters import RecordFilter
 from .repositories import RecordsRepository
 
@@ -10,16 +10,16 @@ class RecordsService:
     def __init__(self, repository: RecordsRepository):
         self.repository = repository
 
-    def list(self, query_params=None):
+    def list(self, query_params: QueryDict):
         queryset = self.repository.list()
         
-        if query_params:
-            filterset = RecordFilter(query_params, queryset=queryset)
-            if not filterset.is_valid():
-                raise ValidationError(filterset.errors) 
-            
-            queryset = filterset.qs
-        return queryset
+        filterset = RecordFilter(data=query_params, queryset=queryset)
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors)
+        
+        filtered_queryset = filterset.qs.order_by('id')
+        total_count = filtered_queryset.count() 
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         record = self.repository.create(input_data)

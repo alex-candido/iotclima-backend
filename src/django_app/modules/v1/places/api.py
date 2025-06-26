@@ -27,7 +27,6 @@ class StandardResultsPagination(PageNumberPagination):
         }
         return Response(response_data)
 
-
 class PlacesViewSet(viewsets.ViewSet):
     service: PlacesService = core_container.places_container.service()
     pagination_class = StandardResultsPagination()

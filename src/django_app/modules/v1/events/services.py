@@ -1,7 +1,7 @@
 # django_app/modules/v1/events/services.py
 
 from rest_framework.exceptions import ValidationError
-
+from rest_framework.request import QueryDict
 from .filters import EventFilter
 from .repositories import EventsRepository
 
@@ -10,16 +10,16 @@ class EventsService:
     def __init__(self, repository: EventsRepository):
         self.repository = repository
 
-    def list(self, query_params=None):
-        queryset = self.repository.list()
+    def list(self, query_params: QueryDict):
+        queryset = self.repository.list() 
+        filterset = EventFilter(data=query_params, queryset=queryset)
         
-        if query_params:
-            filterset = EventFilter(query_params, queryset=queryset)
-            if not filterset.is_valid():
-                raise ValidationError(filterset.errors) 
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors) 
             
-            queryset = filterset.qs
-        return queryset
+        filtered_queryset = filterset.qs.order_by('id') 
+        total_count = queryset.count()
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         event = self.repository.create(input_data)

@@ -14,14 +14,23 @@ from .services import RecordsService
 
 
 class StandardResultsPagination(PageNumberPagination):
-    page_size = 10 
-    page_size_query_param = 'page_size' 
-    max_page_size = 100 
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
+    def get_paginated_response(self, data, total_count=None):
+        response_data = {
+            'total_count': total_count if total_count is not None else 0,
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        }
+        return Response(response_data)
 
 class RecordsViewSet(viewsets.ViewSet):
     service: RecordsService = core_container.records_container.service()
-    pagination_class = StandardResultsPagination() 
+    pagination_class = StandardResultsPagination()
 
     @staticmethod
     def _validated_data(serializer_class: Type[Serializer], data: Union[dict, List[dict], Any], **kwargs) -> Any:
@@ -36,10 +45,15 @@ class RecordsViewSet(viewsets.ViewSet):
 
     # GET /records/
     def list(self, request):
-        filtered_queryset = self.service.list(query_params=request.query_params)
+        filtered_queryset, total_count = self.service.list(query_params=request.query_params)
+        
+        if request.query_params.get('count_only') == 'true':
+            count = filtered_queryset.count()
+            return Response({'count': count}, status=status.HTTP_200_OK)
+        
         page = self.pagination_class.paginate_queryset(filtered_queryset, request, view=self)
         serializer = RecordsOutputSerializer(page, many=True)
-        return self.pagination_class.get_paginated_response(serializer.data)
+        return self.pagination_class.get_paginated_response(serializer.data, total_count=total_count)
 
     # POST /records/
     def create(self, request):

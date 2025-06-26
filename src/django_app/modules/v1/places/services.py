@@ -31,9 +31,7 @@ class PlacesService:
             raise ValidationError(filterset.errors)
 
         filtered_queryset = filterset.qs.order_by('id') 
-
-        total_count = filtered_queryset.count() 
-
+        total_count = queryset.count()
         return filtered_queryset, total_count
 
     def create(self, input_data):

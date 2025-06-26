@@ -13,13 +13,13 @@ class StationSensorService:
     def list(self, query_params=None):
         queryset = self.repository.list()
         
-        if query_params:
-            filterset = StationSensorFilter(query_params, queryset=queryset)
-            if not filterset.is_valid():
-                raise ValidationError(filterset.errors) 
-            
-            queryset = filterset.qs
-        return queryset
+        filterset = StationSensorFilter(data=query_params, queryset=queryset)
+        if not filterset.is_valid():
+            raise ValidationError(filterset.errors)
+        
+        filtered_queryset = filterset.qs.order_by('id')
+        total_count = filtered_queryset.count() 
+        return filtered_queryset, total_count
 
     def create(self, input_data):
         station_sensor = self.repository.create(input_data)

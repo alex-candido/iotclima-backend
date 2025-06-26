@@ -1,7 +1,9 @@
 # django_app/modules/v1/station_sensors/repositories.py
 
+from django.core.exceptions import ObjectDoesNotExist
 from .models import StationSensor
-
+from typing import Any, Dict, Union, Type
+from uuid import UUID
 
 class StationSensorRepository:
 
@@ -11,8 +13,12 @@ class StationSensorRepository:
     def create(self, validated_data):
         return StationSensor.objects.create(**validated_data)
 
-    def get(self, pk):
-        return StationSensor.objects.get(pk=pk)
+    def get(self, pk: Union[int, str, UUID]):
+        try:
+            uuid_obj = UUID(str(pk))
+            return StationSensor.objects.get(uuid=uuid_obj)
+        except (ValueError, ObjectDoesNotExist):
+            return StationSensor.objects.get(id=pk)  
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
