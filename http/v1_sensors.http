@@ -1,0 +1,69 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@sensor_id = 1 # Replace with an actual sensor ID from your database
+
+### List all sensors
+GET {{baseUrl}}/sensors/
+
+### Example: Get sensors by model name
+GET {{baseUrl}}/sensors/?model__icontains=THERM_TEMPERATURE
+
+### Example: Get sensors by type (1 for TEMPERATURE, 2 for HUMIDITY)
+GET {{baseUrl}}/sensors/?type__in=1,2
+
+### Example: Get sensors with min_value greater than 0
+GET {{baseUrl}}/sensors/?min_value__gt=0
+
+### Example: Paginate to second page, 5 items per page
+GET {{baseUrl}}/sensors/?page=2&page_size=5
+
+### Create a new sensor
+POST {{baseUrl}}/sensors/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": 1, 
+  "model": "API_THERM_001",
+  "unit": 1, 
+  "min_value": -30.0,
+  "max_value": 70.0,
+  "status": 1, 
+  "user": 1 
+}
+
+### Retrieve a sensor by ID
+GET {{baseUrl}}/sensors/{{sensor_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a sensor by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/sensors/{{sensor_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": 1, 
+  "model": "UPDATED_THERM_001",
+  "unit": 2, 
+  "min_value": -22.0, 
+  "max_value": 158.0, 
+  "status": 1, 
+  "user": 1
+}
+
+### Partially update a sensor by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/sensors/{{sensor_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "model": "PARTIAL_UPD_THERM_001",
+  "status": 0 
+}
+
+### Delete a sensor by ID (soft delete: sets status=INACTIVE)
+DELETE {{baseUrl}}/sensors/{{sensor_id}}/
+Authorization: Bearer {{accessToken}}

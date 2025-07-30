@@ -1,0 +1,69 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@station_sensor_id = 1 # Replace with an actual StationSensor link ID from your database
+@station_id_fk = 1 # Replace with an actual Station ID
+@sensor_id_fk = 1 # Replace with an actual Sensor ID
+
+### List all station-sensor links
+GET {{baseUrl}}/station_sensors/
+
+### Example: Get links by station ID
+GET {{baseUrl}}/station_sensors/?station__id=1
+
+### Example: Get active links for a specific sensor model
+GET {{baseUrl}}/station_sensors/?sensor__model__icontains=THERM&is_active=true
+
+### Example: Get links installed after a specific date
+GET {{baseUrl}}/station_sensors/?installed_date__gt=2024-01-01T00:00:00Z
+
+### Example: Paginate to first page, 10 items per page
+GET {{baseUrl}}/station_sensors/?page=1&page_size=10
+
+### Create a new station-sensor link
+POST {{baseUrl}}/station_sensors/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "station": {{station_id_fk}}, # ID of the station
+  "sensor": {{sensor_id_fk}},   # ID of the sensor
+  "position": "Top Right",
+  "installed_date": "2024-06-10T10:00:00Z",
+  "calibrated_at": "2024-06-05T00:00:00Z",
+  "is_active": true
+}
+
+### Retrieve a station-sensor link by ID
+GET {{baseUrl}}/station_sensors/{{station_sensor_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a station-sensor link by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/station_sensors/{{station_sensor_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "station": {{station_id_fk}}, # Must provide parent FKs even on update
+  "sensor": {{sensor_id_fk}},
+  "position": "Bottom Left",
+  "installed_date": "2024-06-10T10:00:00Z",
+  "calibrated_at": "2024-06-10T00:00:00Z",
+  "is_active": false # Mark link as inactive
+}
+
+### Partially update a station-sensor link by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/station_sensors/{{station_sensor_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "position": "Recalibrated Slot",
+  "calibrated_at": "2024-06-15T00:00:00Z"
+}
+
+### Delete a station-sensor link by ID (soft delete: sets is_active=false)
+DELETE {{baseUrl}}/station_sensors/{{station_sensor_id}}/
+Authorization: Bearer {{accessToken}}

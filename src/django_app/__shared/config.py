@@ -1,6 +1,6 @@
 # django_app/__shared/config.py
 
-from typing import Any, Dict, List, Literal, Tuple
+from typing import Any, Dict, List, Literal, Set, Tuple
 
 import dj_database_url
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -56,16 +56,17 @@ class ConfigService(BaseSettings):
     # Frontend URL (centralized and used for all redirects)
     FRONTEND_URL: str = "http://localhost:3000"
     
-    LOGIN_URL: str = "/auth/sign-in"
-    LOGIN_REDIRECT_URL: str = "/app"
-    LOGOUT_REDIRECT_URL: str = "/"
-    RESET_PASSWORD_REDIRECT_URL: str = "/auth/reset-password"
+    LOGIN_URL: str = f"{FRONTEND_URL}/auth/sign-in"
+    LOGIN_REDIRECT_URL: str = f"{FRONTEND_URL}/app"
+    LOGOUT_REDIRECT_URL: str = f"{FRONTEND_URL}/"
+    RESET_PASSWORD_REDIRECT_URL: str = f"{FRONTEND_URL}/auth/reset-password"
     
     # django-allauth (Config) [https://docs.allauth.org/en/dev/account/configuration.html]
     # django-allauth (signup) 
     ACCOUNT_SIGNUP_FIELDS: List[str] = ['email*', 'username*', 'password1*', 'password2*'] 
     
     # django-allauth (Login)
+    ACCOUNT_LOGIN_METHODS: Set[str] = {'email', 'username'}
     ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION: bool = False
     
     # django-allauth (Password Reset)
@@ -75,14 +76,16 @@ class ConfigService(BaseSettings):
     ACCOUNT_CONFIRM_EMAIL_ON_GET: bool = True
     ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS: int = 3
     ACCOUNT_EMAIL_VERIFICATION: str = 'mandatory'
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL: str = 'https'
     
     # django-allauth (Routing)
     ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS: bool = True
     ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL: str = LOGIN_URL
     ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL: str = LOGIN_REDIRECT_URL
-    ACCOUNT_LOGOUT_REDIRECT_URL: str = LOGOUT_REDIRECT_URL 
+    ACCOUNT_LOGOUT_REDIRECT_URL: str = LOGOUT_REDIRECT_URL
     ACCOUNT_SIGNUP_REDIRECT_URL: str = LOGIN_REDIRECT_URL
-    
+    ACCOUNT_PASSWORD_REDIRECT_URL: str = RESET_PASSWORD_REDIRECT_URL
+
     # django-allauth (Sending Email)
     ACCOUNT_EMAIL_SUBJECT_PREFIX: str = '[MyProject] '
     ACCOUNT_EMAIL_NOTIFICATIONS: bool = True
@@ -94,6 +97,7 @@ class ConfigService(BaseSettings):
     REST_AUTH_USE_JWT: bool = True
     REST_AUTH_PASSWORD_RESET_USE_SITES_DOMAIN: bool = False
     REST_AUTH_PASSWORD_RESET_SERIALIZER: str = 'django_app.modules.v1.auth.serializers.CustomPasswordResetSerializer'
+    REST_AUTH_USER_DETAILS_SERIALIZER: str = 'django_app.modules.v1.users.serializers.CustomUserDetailsSerializer'
     
     # django-rest-framework-simplejwt Settings [https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html]
     SIMPLE_JWT_ROTATE_REFRESH_TOKENS: bool = True 
@@ -106,9 +110,27 @@ class ConfigService(BaseSettings):
     SIMPLE_JWT_TOKEN_TYPE_CLAIM: str = "token_type" 
     SIMPLE_JWT_JTI_CLAIM: str = "jti" 
     
+    VERIFYING_KEY: str = ""
+    AUDIENCE: str | None = None
+    ISSUER: str | None = None
+    JSON_ENCODER: str | None = None
+    JWK_URL: str | None = None
+    LEEWAY: int = 0
+
+    USER_AUTHENTICATION_RULE: str = "rest_framework_simplejwt.authentication.default_user_authentication_rule"
+    
+    AUTH_TOKEN_CLASSES: Tuple[str, ...] = (
+        "rest_framework_simplejwt.tokens.AccessToken",
+        "rest_framework_simplejwt.tokens.RefreshToken",
+    ) 
+    TOKEN_USER_CLASS: str = "rest_framework_simplejwt.models.TokenUser"
+    
+    SLIDING_TOKEN_REFRESH_EXP_CLAIM: str = "refresh_exp"
+    SLIDING_TOKEN_LIFETIME_MINUTES: int = 5 
+    SLIDING_TOKEN_REFRESH_LIFETIME_DAYS: int = 1 
+    
     # Authentication Backends  
     AUTHENTICATION_BACKENDS_LIST: Tuple[str, ...] = (
         'django.contrib.auth.backends.ModelBackend',
         'allauth.account.auth_backends.AuthenticationBackend',
     )
-    

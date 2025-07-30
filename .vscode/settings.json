@@ -4,4 +4,17 @@
   "python.analysis.extraPaths": ["./src"],
   "python.analysis.autoImportCompletions": true,
   "python.analysis.indexing": true,
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.fontSize": 12,
+    "editor.rulers": [
+    // 80,
+    120
+  ],
+  "editor.parameterHints.enabled": false,
+  "editor.renderLineHighlight": "gutter",
+  "cSpell.language": "en,pt",
+  "editor.lineHeight": 26,
+  "material-icon-theme.languages.associations": {
+    "dotenv": "tune"
+  },
 }

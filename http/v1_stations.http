@@ -1,0 +1,121 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@station_id = 1 # Replace with an actual station ID from your database
+@place_id_fk = 1 # Replace with an actual Place ID for creating/updating stations
+
+### List all stations
+GET {{baseUrl}}/stations/
+
+### Example: Get stations with name containing 'STATION'
+GET {{baseUrl}}/stations/?name__icontains=STATION
+
+### Example: Get stations of a specific model
+GET {{baseUrl}}/stations/?model__exact=THERM_TEMPERATURE_XXX
+
+### Example: Get stations by specific status (1 for ACTIVE, 2 for ONLINE)
+GET {{baseUrl}}/stations/?status__in=1,2
+
+### Example: Get stations linked to a specific place ID
+GET {{baseUrl}}/stations/?place_id=1
+
+### Example: Get stations that have a sensor of type TEMPERATURE (1)
+GET {{baseUrl}}/stations/?sensors__type=1
+
+### Example: Paginate to second page, 5 items per page
+GET {{baseUrl}}/stations/?page=2&page_size=5
+
+### Create a new station
+POST {{baseUrl}}/stations/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "NEW_API_STATION_001",
+  "description": "Station created via API for testing.",
+  "model": "API_MODEL_XYZ",
+  "firmware": "v1.0",
+  "installed_at": "2024-01-15T10:00:00Z",
+  "battery_level": 90,
+  "signal_strength": -50,
+  "status": 1, 
+  "place": {{@place_id_fk}}, 
+  "user": 1, 
+  "sensors_data": [ 
+    {
+      "sensor": 1, 
+      "position": "Top",
+      "installed_date": "2024-01-15T10:00:00Z",
+      "calibrated_at": "2024-01-01T00:00:00Z",
+      "is_active": true
+    },
+    {
+      "sensor": 2, 
+      "position": "Mid",
+      "installed_date": "2024-01-15T10:00:00Z",
+      "calibrated_at": null,
+      "is_active": true
+    }
+  ]
+}
+
+### Retrieve a station by ID
+GET {{baseUrl}}/stations/{{station_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a station by ID (PUT)
+# This will replace all fields, and existing sensors_data links will be updated/removed based on new list.
+PUT {{baseUrl}}/stations/{{station_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "UPDATED_API_STATION_001",
+  "description": "Updated description via PUT.",
+  "model": "UPD_MODEL_XYZ",
+  "firmware": "v1.1",
+  "installed_at": "2024-01-15T10:00:00Z",
+  "battery_level": 75,
+  "signal_strength": -60,
+  "status": 2, 
+  "place": {{place_id_fk}},
+  "user": 1,
+  "sensors_data": [ 
+    {
+      "sensor": 1,
+      "position": "Top-Updated",
+      "installed_date": "2024-01-15T10:00:00Z",
+      "calibrated_at": "2024-06-01T00:00:00Z",
+      "is_active": true
+    },
+    {
+      "sensor": 3,
+      "position": "Bottom",
+      "installed_date": "2024-06-15T10:00:00Z",
+      "calibrated_at": null,
+      "is_active": true
+    }
+  ]
+}
+
+### Partially update a station by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/stations/{{station_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "description": "Partial update for Station description.",
+  "signal_strength": -45,
+  "sensors_data": [ 
+    {
+      "sensor": 1,
+      "position": "Updated Slot A",
+      "is_active": false 
+    }
+  ]
+}
+
+### Delete a station by ID (soft delete: sets status=INACTIVE)
+DELETE {{baseUrl}}/stations/{{station_id}}/
+Authorization: Bearer {{accessToken}}

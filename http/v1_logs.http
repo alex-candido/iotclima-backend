@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@log_id = 1 # Replace with an actual log ID from your database
+
+### List all logs
+GET {{baseUrl}}/logs/
+
+### Example: Get logs by message content
+GET {{baseUrl}}/logs/?message__icontains=error
+
+### Example: Get logs by specific level (ERROR = 4, WARN = 3)
+GET {{baseUrl}}/logs/?level__in=3,4
+
+### Example: Get logs for a specific user ID
+GET {{baseUrl}}/logs/?user__id=1
+
+### Example: Get logs for a specific station name
+GET {{baseUrl}}/logs/?station__name__icontains=BR-CE-ACA
+
+### Example: Paginate to first page, 10 items per page
+GET {{baseUrl}}/logs/?page=1&page_size=10
+
+### Create a new log entry
+# Note: Logs are typically generated automatically by the system.
+# This API is for manual entry or integration with other logging systems.
+POST {{baseUrl}}/logs/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "message": "Manual test log entry from API.",
+  "level": 2, # INFO
+  "metadata": {
+    "source": "api_test",
+    "details": "User manually created this log."
+  },
+  "user": 1, # Replace with an actual user ID
+  "station": 1 # Replace with an actual station ID
+}
+
+### Retrieve a log by ID
+GET {{baseUrl}}/logs/{{log_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a log by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/logs/{{log_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "message": "Updated manual log entry.",
+  "level": 3, # WARN
+  "metadata": {
+    "status": "reviewed",
+    "updated_by": "api"
+  },
+  "user": 1,
+  "station": 1
+}
+
+### Partially update a log by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/logs/{{log_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "level": 4, # ERROR
+  "message": "Severity escalated due to new information."
+}
+
+### Delete a log by ID (hard delete: logs are usually deleted physically)
+DELETE {{baseUrl}}/logs/{{log_id}}/
+Authorization: Bearer {{accessToken}}

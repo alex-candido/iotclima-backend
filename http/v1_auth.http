@@ -1,0 +1,159 @@
+# http/v1_auth.http
+
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+
+### Variables for testing
+@username = alex.candido.tec@gmail.com
+@password = Alex@123
+@email = pmccormick@example.org
+
+### ========================
+### dj-rest-auth Authentication
+### ========================
+
+### Login (returns JWT tokens)
+# @name restLogin
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Store tokens from dj-rest-auth login response
+@accessToken = {{restLogin.response.body.access}}
+@refreshToken = {{restLogin.response.body.refresh}}
+
+### Logout
+POST {{baseUrl}}/auth/logout/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "refresh": "{{refreshToken}}"
+}
+
+### Change user password
+POST {{baseUrl}}/auth/password/change/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "old_password": "{{password}}",
+  "new_password1": "NewPassword123",
+  "new_password2": "NewPassword123"
+}
+
+### Retrieve authenticated user details
+GET {{baseUrl}}/auth/user/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+### Update authenticated user details
+PUT {{baseUrl}}/auth/user/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "first_name": "Alex",
+  "last_name": "Candido",
+  "email": "{{email}}"
+}
+
+### ========================
+### Password Reset
+### ========================
+
+### Request password reset
+POST {{baseUrl}}/auth/password/reset/
+Content-Type: {{contentType}}
+
+{
+  "email": "alex.candido.dev@gmail.com"
+}
+
+### Confirm password reset
+POST {{baseUrl}}/auth/password/reset/confirm/
+Content-Type: {{contentType}}
+
+{
+  "token": "password-reset-token-here",
+  "uid": "user-id-here",
+  "new_password1": "NewPassword123",
+  "new_password2": "NewPassword123"
+}
+
+### ========================
+### JWT Authentication
+### ========================
+
+### Obtain JWT token pair (via simplejwt)
+# @name tokenLogin
+POST {{baseUrl}}/auth/token/
+Content-Type: {{contentType}}
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Store tokens from login response
+@accessToken = {{tokenLogin.response.body.access}}
+@refreshToken = {{tokenLogin.response.body.refresh}}
+
+### Refresh JWT token
+POST {{baseUrl}}/auth/token/refresh/
+Content-Type: {{contentType}}
+
+{
+  "refresh": "{{refreshToken}}"
+}
+
+### Verify JWT token
+POST {{baseUrl}}/auth/token/verify/
+Content-Type: {{contentType}}
+
+{
+  "token": "{{accessToken}}"
+}
+
+### ========================
+### Registration and Email Verification
+### ========================
+
+### Register new user
+POST {{baseUrl}}/auth/registration/
+Content-Type: {{contentType}}
+
+{
+  "username": "rodiziosexta",
+  "email": "claylton202@gmail.com",
+  "password1": "StrongPassword123",
+  "password2": "StrongPassword123"
+}
+
+### Verify email address using token
+POST {{baseUrl}}/auth/registration/verify-email/
+Content-Type: {{contentType}}
+
+{
+  "key": "email-verification-token-here"
+}
+
+### Resend verification email
+POST {{baseUrl}}/auth/registration/resend-email/
+Content-Type: {{contentType}}
+
+{
+  "email": "{{email}}"
+}
+
+### Email verification sent confirmation page (GET)
+GET {{baseUrl}}/auth/registration/account-email-verification-sent/
+Content-Type: {{contentType}}
+
+### Confirm email via token in URL (GET)
+GET {{baseUrl}}/auth/registration/account-confirm-email/email-verification-token-here/
+Content-Type: {{contentType}}

@@ -1,0 +1,79 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@record_id = 1 # Replace with an actual record ID from your database
+@station_id_fk_record = 1 # Replace with an actual Station ID for creating/updating records
+
+### List all records
+GET {{baseUrl}}/records/
+
+### Example: Get records for a specific station ID
+GET {{baseUrl}}/records/?station__id=1
+
+### Example: Get records for a station by its name (e.g., starts with 'BR-CE-ACA')
+GET {{baseUrl}}/records/?station__name__startswith=BR-CE-ACA
+
+### Example: Get records with temperature greater than 25 degrees Celsius
+GET {{baseUrl}}/records/?temperature__gt=25
+
+### Example: Get records created on a specific date (e.g., 2025-06-14)
+GET {{baseUrl}}/records/?recorded_at__date=2025-06-14
+
+### Example: Paginate to first page, 10 items per page
+GET {{baseUrl}}/records/?page=1&page_size=10
+
+### Create a new record
+# Note: In a real system, records are usually created automatically by stations.
+# This API is for manual entry or integration with other systems.
+POST {{baseUrl}}/records/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "recorded_at": "2025-06-15T12:00:00Z",
+  "temperature": 28.5,
+  "humidity": 75.2,
+  "wind_speed": 5.1,
+  "wind_direction": 120,
+  "pressure": 1012.3,
+  "rainfall": 0.5,
+  "status": 1, # ACTIVE
+  "station": {{station_id_fk_record}} # Station ID it belongs to
+}
+
+### Retrieve a record by ID
+GET {{baseUrl}}/records/{{record_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a record by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/records/{{record_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "recorded_at": "2025-06-15T13:00:00Z",
+  "temperature": 29.0,
+  "humidity": 70.0,
+  "wind_speed": 6.0,
+  "wind_direction": 130,
+  "pressure": 1013.0,
+  "rainfall": 1.0,
+  "status": 1,
+  "station": {{station_id_fk_record}}
+}
+
+### Partially update a record by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/records/{{record_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "temperature": 28.8,
+  "humidity": 76.5
+}
+
+### Delete a record by ID (soft delete: sets status=INACTIVE)
+DELETE {{baseUrl}}/records/{{record_id}}/
+Authorization: Bearer {{accessToken}}

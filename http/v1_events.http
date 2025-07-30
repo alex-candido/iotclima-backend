@@ -1,0 +1,86 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@event_id = 1 # Replace with an actual event ID from your database
+@station_sensor_id_fk = 1 # Replace with an actual StationSensor link ID
+
+### List all events
+GET {{baseUrl}}/events/
+
+### Example: Get events with title containing 'Alert'
+GET {{baseUrl}}/events/?title__icontains=Alert
+
+### Example: Get events of type ALERT (1) or WARNING (2)
+GET {{baseUrl}}/events/?type__in=1,2
+
+### Example: Get events with HIGH severity (3)
+GET {{baseUrl}}/events/?severity=3
+
+### Example: Get events for a specific station ID
+GET {{baseUrl}}/events/?station__id=1
+
+### Example: Get events related to a sensor model (via station_sensor link)
+GET {{baseUrl}}/events/?station_sensor__sensor__model__icontains=THERM
+
+### Example: Get open events for a station (by name)
+GET {{baseUrl}}/events/?station__name__icontains=BR-CE-ACA&status=1
+
+### Example: Paginate to first page, 10 items per page
+GET {{baseUrl}}/events/?page=1&page_size=10
+
+### Create a new event
+# Note: Events are usually triggered by system logic (e.g., from records processing).
+# This API is for manual entry or integration with other systems.
+POST {{baseUrl}}/events/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "API Generated Alert",
+  "description": "An alert generated manually via API for testing purposes.",
+  "occurred_at": "2025-06-15T15:30:00Z",
+  "type": 1, # ALERT
+  "category": 1, # WEATHER
+  "severity": 3, # HIGH
+  "status": 1, # OPEN
+  "user": 1, # Replace with an actual user ID
+  "station_sensor": {{station_sensor_id_fk}} # ID of the StationSensor link that triggered/is related
+}
+
+### Retrieve an event by ID
+GET {{baseUrl}}/events/{{event_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update an event by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/events/{{event_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "API Updated Alert",
+  "description": "Updated description via PUT.",
+  "occurred_at": "2025-06-15T15:30:00Z",
+  "resolved_at": "2025-06-15T16:00:00Z",
+  "type": 1,
+  "category": 1,
+  "severity": 2, # MEDIUM
+  "status": 3, # RESOLVED
+  "user": 1,
+  "station_sensor": {{station_sensor_id_fk}}
+}
+
+### Partially update an event by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/events/{{event_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": 2, # ACKNOWLEDGED
+  "resolved_at": "2025-06-15T15:45:00Z"
+}
+
+### Delete an event by ID (soft delete: sets status=RESOLVED)
+DELETE {{baseUrl}}/events/{{event_id}}/
+Authorization: Bearer {{accessToken}}

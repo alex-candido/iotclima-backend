@@ -1,0 +1,113 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@place_id = 1 # Replace with an actual place ID from your database
+
+### List all places (without filters or pagination)
+GET {{baseUrl}}/places/
+
+### List all places (with pagination)
+GET {{baseUrl}}/places/?page=2&page_size=5
+
+### List all places (with standard text filters)
+# Filter by name containing 'BR-CE' and city containing 'Fortaleza'
+GET {{baseUrl}}/places/?name__icontains=BR-CE&city__icontains=Fortaleza
+
+# Filter by specific status (1 for ACTIVE) and type (3 for CITY)
+GET {{baseUrl}}/places/?status=1&type=3
+
+# Filter by creation date range
+GET {{baseUrl}}/places/?created_at__gt=2025-06-01T00:00:00Z&created_at__lt=2025-07-01T23:59:59Z
+
+### List all places (with geospatial filters)
+
+# 1. g_near: Places near a point within a radius
+#    Usage: ?g_near=latitude,longitude,radius_km
+#    Example: Places within 10 km of Fortaleza city center (-3.7319, -38.5267)
+GET {{baseUrl}}/places/?g_near=-3.7319,-38.5267,10
+
+# 2. g_within_box: Places within a bounding box (min_lon,min_lat,max_lon,max_lat)
+#    Example: Places within a box covering part of Ceará
+GET {{baseUrl}}/places/?g_within_box=-39.0,-6.0,-37.0,-2.0
+
+# 3. g_within_polygon: Places within a given WKT polygon
+#    Usage: ?g_within_polygon=POLYGON((lon1 lat1, lon2 lat2, ..., lonN latN, lon1 lat1))
+GET {{baseUrl}}/places/?g_within_polygon=POLYGON((-38.53 -3.74, -38.51 -3.74, -38.51 -3.72, -38.53 -3.72, -38.53 -3.74))
+
+# 4. g_intersects: Places intersecting a given WKT geometry (Point, LineString, Polygon)
+#    Usage: ?g_intersects=WKT_GEOMETRY
+GET {{baseUrl}}/places/?g_intersects=POINT(-38.5267 -3.7319)
+
+# 5. g_wkt: Generic filter for WKT. Usage: ?g_wkt=WKT_GEOMETRY
+GET {{baseUrl}}/places/?g_wkt=LINESTRING(-38.50 -3.70, -38.55 -3.75)
+
+# 6. g_distance: Places within an explicit distance range from a point (lat,lon,min_km,max_km)
+GET {{baseUrl}}/places/?g_distance=-3.7319,-38.5267,50,100
+
+# 7. g_buffer: Places intersecting a buffer around a WKT geometry (WKT_GEOMETRY,radius_meters)
+GET {{baseUrl}}/places/?g_buffer=POINT(-38.5267 -3.7319),500
+
+# 8. g_contains: Places whose geometry is contained by a given WKT polygon
+GET {{baseUrl}}/places/?g_contains=POLYGON((-39.5 -7.0, -37.5 -7.0, -37.5 -2.0, -39.5 -2.0, -39.5 -7.0))
+
+# 9. g_along_line: Places within a certain distance from a given LineString (LINESTRING,tolerance_meters)
+GET {{baseUrl}}/places/?g_along_line=LINESTRING(-38.53 -3.73, -38.52 -3.72),100
+
+### Create a new place
+POST {{baseUrl}}/places/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "NEW-TEST-PLACE-API",
+  "description": "A place created via API for testing.",
+  "address": "API Created Street, 100",
+  "city": "Caucaia",
+  "state": "Ceará",
+  "country": "Brazil",
+  "latitude": -3.75,
+  "longitude": -38.60,
+  "status": 1,
+  "type": 3,
+  "user": 1 
+}
+
+### Retrieve a place by ID
+GET {{baseUrl}}/places/{{place_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a place by ID (PUT)
+# This will replace all fields.
+PUT {{baseUrl}}/places/{{place_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "UPDATED-PLACE-API",
+  "description": "Updated description via PUT.",
+  "address": "Updated Address, 200",
+  "city": "Maracanaú",
+  "state": "Ceará",
+  "country": "Brazil",
+  "latitude": -3.80,
+  "longitude": -38.70,
+  "status": 0, 
+  "type": 1, 
+  "user": 1
+}
+
+### Partially update a place by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/places/{{place_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "description": "Partial update of description.",
+  "latitude": -3.74,
+  "longitude": -38.55
+}
+
+### Delete a place by ID (soft delete: sets status=INACTIVE)
+DELETE {{baseUrl}}/places/{{place_id}}/
+Authorization: Bearer {{accessToken}}

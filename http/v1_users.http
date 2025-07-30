@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:3333/api/v1
+@contentType = application/json
+@accessToken = YOUR_AUTH_TOKEN_HERE_FROM_LOGIN # Replace with a valid JWT access token
+@user_id = 1 # Replace with an actual user ID from your database
+
+### List all users
+# Query parameters for filtering: username__icontains, email__exact, is_active, etc.
+# Query parameters for pagination: page, page_size
+GET {{baseUrl}}/users/
+
+### Example: Get users with username containing 'admin'
+GET {{baseUrl}}/users/?username__icontains=admin
+
+### Example: Get users that are staff
+GET {{baseUrl}}/users/?is_staff=true
+
+### Example: Paginate to second page, 5 items per page
+GET {{baseUrl}}/users/?page=2&page_size=5
+
+### Create a new user
+# Note: For creation, use the /auth/registration/ endpoint provided by dj-rest-auth.
+# The /users/ endpoint's create method is for internal API use, or specific admin workflows.
+# This example payload reflects the UsersInputSerializer
+POST {{baseUrl}}/users/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "newuserapi",
+  "first_name": "API",
+  "last_name": "Test",
+  "email": "api.test@example.com",
+  "password": "SecurePassword123"
+}
+
+### Retrieve a user by ID
+GET {{baseUrl}}/users/{{user_id}}/
+Authorization: Bearer {{accessToken}}
+
+### Update a user by ID (PUT)
+# This will replace all fields. Omit password if not changing.
+PUT {{baseUrl}}/users/{{user_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "updateduserapi",
+  "first_name": "UpdatedAPI",
+  "last_name": "UpdatedTest",
+  "email": "api.updated@example.com"
+  # "password": "NewSecurePassword123"
+}
+
+### Partially update a user by ID (PATCH)
+# This will update only the fields provided.
+PATCH {{baseUrl}}/users/{{user_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "first_name": "PartialUpdate"
+}
+
+### Delete a user by ID (soft delete: sets is_active=false)
+DELETE {{baseUrl}}/users/{{user_id}}/
+Authorization: Bearer {{accessToken}}
